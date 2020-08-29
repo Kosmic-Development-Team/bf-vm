@@ -4,6 +4,7 @@ pub struct BFVM {
 
 impl BFVM {
 
+    //TODO: Update docs with parameters and examples
     /// Creates a new BFVM that will excecute the given augmented BrainFuck code with the given
     /// peripherals and parameters.
     //pub fn new(/* code, peripherals and other things */) -> &BFVM {
