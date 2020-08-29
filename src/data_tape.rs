@@ -1,14 +1,11 @@
 use std::collections::HashMap;
+use super::virtual_machine_errors::VMErrKind;
 
 pub struct DataTape {
     tapes: HashMap<u16, [u16; 0x10000]>,
     pointer: u16,
     page: u16,
     max_pages: u32,
-}
-
-pub enum VMErrKind {
-    InvalidPage(u16, u32),
 }
 
 impl DataTape {
