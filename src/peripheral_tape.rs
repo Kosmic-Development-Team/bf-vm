@@ -13,18 +13,18 @@ type Read = dyn FnMut() -> Result<u16, VMErrKind>;
 type NativeWriteMap<'a> = HashMap<u16, &'a mut Write>;
 type NativeReadMap<'a> = HashMap<u16, &'a mut Read>;
 
-pub struct PeripheralTape<'a, T: BFPeripheral> {
-    peripherals: &'a mut Vec<T>,
+pub struct PeripheralTape<'a> {
+    peripherals: &'a mut Vec<&'a dyn BFPeripheral>,
     native_write: &'a mut NativeWriteMap<'a>,
     native_read: &'a mut NativeReadMap<'a>,
 }
 
-impl<'a, T: BFPeripheral> PeripheralTape<'a, T> {
+impl<'a> PeripheralTape<'a> {
     pub fn new(
-        peripherals: &'a mut Vec<T>,
+        peripherals: &'a mut Vec<&'a dyn BFPeripheral>,
         native_write: &'a mut NativeWriteMap<'a>,
         native_read: &'a mut NativeReadMap<'a>,
-    ) -> Result<PeripheralTape<'a, T>, VMErrKind> {
+    ) -> Result<PeripheralTape<'a>, VMErrKind> {
         let least = native_write
             .keys()
             .chain(native_read.keys())
