@@ -1,5 +1,4 @@
-
-
+/// The virtual machine object that controls the virtual machine.
 pub struct BFVM {
     // TODO: necessary running variables
 }
