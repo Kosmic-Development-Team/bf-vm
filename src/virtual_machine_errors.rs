@@ -5,5 +5,3 @@ pub enum VMErrKind {
    OverlappingPeripheralAddresses(usize, u32),  // peripheral vector length, smallest native address
    InvalidPeripheralTapeAccess(u16),            // peripheral tape address
 }
-
-

@@ -94,13 +94,3 @@ impl<'a, T: BFPeripheral> PeripheralTape<'a, T> {
         Err(VMErrKind::InvalidPeripheralTapeAccess(address))
     }
 }
-
-
-
-
-
-
-
-
-
-
