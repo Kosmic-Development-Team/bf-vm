@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use super::virtual_machine_errors::VMErrKind;
 
 /// A paginated data tape.
 pub struct DataTape {
@@ -6,10 +7,6 @@ pub struct DataTape {
     pointer: u16,
     page: u16,
     max_pages: u32,
-}
-
-pub enum VMErrKind {
-    InvalidPage(u16, u32),
 }
 
 impl DataTape {
