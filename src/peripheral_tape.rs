@@ -54,7 +54,7 @@ impl<'a, T: BFPeripheral> PeripheralTape<'a, T> {
             return periph.write(value);
         }
 
-        Ok(())
+        Err(VMErrKind::InvalidPeripheralTapeAccess(address))
     }
 
     pub fn read(&mut self, address: u16) -> Result<u16, VMErrKind> {
