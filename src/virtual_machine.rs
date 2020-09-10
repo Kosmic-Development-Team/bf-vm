@@ -136,14 +136,20 @@ fn create_jump_map(prog: &Vec<u8>) -> Result<HashMap<usize, usize>, VMErrKind> {
 }
 
 impl<'a> BFVM<'a> {
+
+    pub fn new(code: &str, peripheral_tape: &'a mut PeripheralTape<'a>, max_pages: u32, sanitize: bool) -> Result<BFVM<'a>, VMErrKind> {
+        BFVM::new_with_workspaces(code, peripheral_tape, max_pages, sanitize, 0)
+    }
+
     //TODO: Update docs with parameters and examples
     /// Creates a new BFVM that will excecute the given augmented BrainFuck code with the given
     /// peripherals and parameters.
-    pub fn new(
+    pub fn new_with_workspaces(
         code: &str,
         peripheral_tape: &'a mut PeripheralTape<'a>,
         max_pages: u32,
         sanitize: bool,
+        num_workspaces: usize,
     ) -> Result<BFVM<'a>, VMErrKind> {
         let mut jump_map = HashMap::new();
         let prog = if sanitize {
@@ -158,7 +164,7 @@ impl<'a> BFVM<'a> {
         Ok(BFVM {
             prog,
             jump_map,
-            data_tape: DataTape::new(max_pages),
+            data_tape: DataTape::new_with_workspaces(max_pages, num_workspaces),
             peripheral_tape,
             pointer: 0,
             buffer: 0,
@@ -256,13 +262,11 @@ impl<'a> BFVM<'a> {
                 self.pointer + 1
             }
             BF_PAGE_INC => {
-                self.data_tape
-                    .set_page(self.data_tape.get_page().wrapping_add(1));
+                self.data_tape.next_workspace();
                 self.pointer + 1
             }
             BF_PAGE_DEC => {
-                self.data_tape
-                    .set_page(self.data_tape.get_page().wrapping_sub(1));
+                self.data_tape.prev_workspace();
                 self.pointer + 1
             }
             FIL_JUMP => {

@@ -7,9 +7,30 @@ pub struct DataTape {
     pointer: u16,
     page: u16,
     max_pages: u32,
+
+    num_workspaces: usize,
+    workspaces: Vec<[u16; 0x10000]>,
+    workspace_pointer: usize,
 }
 
 impl DataTape {
+
+    pub fn new_with_workspaces(max_pages: u32, num_workspaces: usize) -> DataTape {
+        let mut workspaces: Vec<[u16; 0x10000]> = Vec::new();
+        for _ in 0..num_workspaces {
+            workspaces.push([0u16; 0x10000]);
+        }
+        DataTape{
+            tapes: HashMap::new(),
+            pointer: 0,
+            page: 0,
+            max_pages,
+
+            num_workspaces,
+            workspaces,
+            workspace_pointer: 0,
+        }
+    }
 
     //TODO: bounds on max pages
     /// Constructs a new, empty `DataTape`.
@@ -19,12 +40,7 @@ impl DataTape {
     /// let mut tape: DataTape = DataTape::new(0x10000);
     /// ```
     pub fn new(max_pages: u32) -> DataTape {
-        DataTape{
-            tapes: HashMap::new(),
-            pointer: 0,
-            page: 0,
-            max_pages,
-        }
+        DataTape::new_with_workspaces(max_pages, 0)
     }
 
     /// Set the address of the tape data pointer.
@@ -83,6 +99,12 @@ impl DataTape {
         if u32::from(self.page) >= self.max_pages {
             return Err(VMErrKind::InvalidPage(self.page, self.max_pages))
         }
+        
+        if self.workspace_pointer > 0 {
+            self.workspaces[self.workspace_pointer - 1][usize::from(self.pointer)] = value; 
+            return Ok(());
+        }
+
         let res = self.tapes.get_mut(&self.page);
         if let Some(data) = res {
             data[usize::from(self.pointer)] = value;
@@ -107,6 +129,11 @@ impl DataTape {
         if u32::from(self.page) >= self.max_pages {
             return Err(VMErrKind::InvalidPage(self.page, self.max_pages))
         }
+
+        if self.workspace_pointer > 0 {
+            return Ok(self.workspaces[self.workspace_pointer - 1][usize::from(self.pointer)]);
+        }
+
         let res = self.tapes.get(&self.page);
         if let Some(data) = res {
             Ok(data[usize::from(self.pointer)])
@@ -124,6 +151,24 @@ impl DataTape {
     /// ```
     pub fn get_max_pages(&self) -> u32 {
         self.max_pages
+    }
+
+    pub fn next_workspace(&mut self) {
+        if self.workspace_pointer == self.num_workspaces {
+            self.page += 1;
+            self.workspace_pointer = 0;
+        } else {
+            self.workspace_pointer += 1;
+        }
+    }
+
+    pub fn prev_workspace(&mut self) {
+        if self.workspace_pointer == 0 {
+            self.page -= 1;
+            self.workspace_pointer = self.num_workspaces;
+        } else {
+            self.workspace_pointer -= 1;
+        }
     }
 }
 
