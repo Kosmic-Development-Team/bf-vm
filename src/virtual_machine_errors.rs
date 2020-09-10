@@ -1,3 +1,4 @@
+/// Errors returned by virtual machine functions.
 pub enum VMErrKind {
    InvalidPage(u16, u32),                       // page, max pages
    PeripheralIOErr(u16, u16),                   // value, address
@@ -5,5 +6,3 @@ pub enum VMErrKind {
    InvalidPeripheralTapeAccess(u16),            // peripheral tape address
    UnmachedLoopParentheses(usize),              // unmached parenthesis location
 }
-
-

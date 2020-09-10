@@ -3,6 +3,7 @@ use super::peripheral_tape::PeripheralTape;
 use super::virtual_machine_errors::VMErrKind;
 use std::collections::HashMap;
 
+/// The virtual machine object that controls the virtual machine.
 pub struct BFVM<'a> {
     prog: Vec<u8>,
     jump_map: HashMap<usize, usize>,

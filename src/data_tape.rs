@@ -126,12 +126,3 @@ impl DataTape {
         self.max_pages
     }
 }
-
-
-
-
-
-
-
-
-
